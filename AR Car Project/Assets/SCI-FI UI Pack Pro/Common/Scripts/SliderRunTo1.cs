@@ -8,12 +8,12 @@ public class SliderRunTo1 : MonoBehaviour
      public bool b=true;
 	 public Slider slider;
 	 public float speed=0.5f;
+	 public GameObject LoadingPage, ToBeLoadedPage;
 
   float time =0f;
   
   void Start()
-  {
-	  
+  {	  
 	slider = GetComponent<Slider>();
   }
   
@@ -26,7 +26,8 @@ public class SliderRunTo1 : MonoBehaviour
 			
         if(time>1)
 		{
-           
+			LoadingPage.SetActive(false);
+			ToBeLoadedPage.SetActive(true);	
 			time=0;
 		}
     }
