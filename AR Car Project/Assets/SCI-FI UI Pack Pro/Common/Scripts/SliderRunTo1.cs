@@ -4,34 +4,33 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SliderRunTo1 : MonoBehaviour
 {
- 
-     public bool b=true;
-	 public Slider slider;
-	 public float speed=0.5f;
-	 public GameObject LoadingPage, ToBeLoadedPage;
+	public bool b=true;
+	public Slider slider;
+	public float speed=0.5f;
+	public GameObject loadingPage, toBeLoadedPage;
 
-  float time =0f;
-  
-  void Start()
-  {	  
-	slider = GetComponent<Slider>();
-  }
+    float time =0f;
+	void Start()
+	{	  
+		slider = GetComponent<Slider>();
+	}
   
     void Update()
     {
-		if(b)
+		if (b)
 		{
-			time+=Time.deltaTime*speed;
+			time += Time.deltaTime * speed;
 			slider.value = time;
+		}
 			
         if(time>1)
 		{
-			LoadingPage.SetActive(false);
-			ToBeLoadedPage.SetActive(true);	
+			loadingPage.SetActive(false);
+			toBeLoadedPage.SetActive(true);
 			time=0;
 		}
     }
-	}
+	
 	
 	
 }
