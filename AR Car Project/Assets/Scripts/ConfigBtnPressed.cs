@@ -9,23 +9,29 @@ public class ConfigBtnPressed : MonoBehaviour
     public List<string> variants;    
     public Button nextBtn;
     public Button prevBtn;
+    public Material bodyMat;
 
     void Start()
-    {        
+    {   
         //display property text as objects name
         propertyText.text = transform.name;
         //Initialize variant text e.g. "Choose steering"
         variantText.text = "Choose " + propertyText.text.ToLower();
 
-        nextBtn.onClick.AddListener(() => { NextBtnPressed(variants, variantText); });
-        //if next button pressed change the variant not just text
-        //hide all other gameobjects from list variants and keep only currVariant
-        //must apply to all panels
+        bool isPropertyColor = propertyText.text == "Color";
 
-        prevBtn.onClick.AddListener(() => { PrevBtnPressed(variants, variantText); });
+        nextBtn.onClick.AddListener(() => 
+        { string newVariant = NextBtnPressed(variants, variantText);
+          ChangeVariant(variants, newVariant, isPropertyColor);
+        });
+
+        prevBtn.onClick.AddListener(() => 
+        { string newVariant = PrevBtnPressed(variants, variantText);
+            ChangeVariant(variants, newVariant, isPropertyColor);
+        });
     }
-
-    void NextBtnPressed(List<string> variants, Text variantText)
+    
+    string NextBtnPressed(List<string> variants, Text variantText)
     {
         int currVarIdx = variants.IndexOf(variantText.text);
 
@@ -39,30 +45,11 @@ public class ConfigBtnPressed : MonoBehaviour
         }
 
         variantText.text = variants[currVarIdx];
-        //variantModel.SetActive(true) wont work coz object is inactive
-        //Solution1: scale object to zero so deactivation not required
-        // Hide button
-        GameObject.Find("Ackerman").transform.localScale = new Vector3(0, 0, 0);
-        // Show button
-        //GameObject.Find("Ackerman").transform.localScale = new Vector3(1, 1, 1);
-        //Solution2: renderer deactivate
 
-        //update 3D Model
-        foreach(string variant in variants)
-        {
-            GameObject variantModel = GameObject.Find(variant);
-            if (variant == variantText.text)
-            {
-                variantModel.transform.localScale = new Vector3(1,1,1);
-            }
-            else
-            {
-                variantModel.transform.localScale = new Vector3(0,0,0);
-            }
-        }
+        return variantText.text;
     }
 
-    void PrevBtnPressed(List<string> variants, Text variantText)
+    string PrevBtnPressed(List<string> variants, Text variantText)
     {
         int currVarIdx = variants.IndexOf(variantText.text);
 
@@ -77,17 +64,79 @@ public class ConfigBtnPressed : MonoBehaviour
 
         variantText.GetComponent<Text>().text = variants[currVarIdx];
 
-        foreach (string variant in variants)
+        return variantText.text;        
+    }
+
+    void ChangeVariant(List<string> variants, string newVariant, bool isColor)
+    {
+        if(!isColor)
         {
-            GameObject variantModel = GameObject.Find(variant);
-            if (variant == variantText.text)
+            foreach (string variant in variants)
             {
-                variantModel.transform.localScale = new Vector3(1, 1, 1);
-            }
-            else
-            {
-                variantModel.transform.localScale = new Vector3(0, 0, 0);
+                GameObject variantModel = GameObject.Find(variant);
+                if (variant == newVariant)
+                {
+                    variantModel.transform.localScale = new Vector3(1, 1, 1);
+                }
+                else
+                {
+                    variantModel.transform.localScale = new Vector3(0, 0, 0);
+                }
             }
         }
+        else
+        {              
+            string currColorText = newVariant.ToLower();
+            Color currColor; 
+
+            switch(currColorText)
+            {
+                case "blue":
+                    currColor = new Color32(45, 190, 240, 70);
+                    break;
+                case "rose gold":
+                    currColor = new Color32(240, 155, 125, 70);
+                    break;
+                case "goblin":
+                    currColor = new Color32(45, 170, 75, 70);
+                    break;
+                case "olive":
+                    currColor = new Color32(180, 190, 50, 70);
+                    break;
+                case "silver":
+                    currColor = new Color32(140, 170, 230, 70);
+                    break;
+                case "rosa":
+                    currColor = new Color32(230, 140, 165, 70);
+                    break;
+                case "golden":
+                    currColor = new Color32(230, 210, 140, 70);
+                    break;
+                case "green":
+                    currColor = new Color32(150, 230, 140, 70);
+                    break;
+                case "cyan":
+                    currColor = new Color32(140, 230, 220, 70);
+                    break;
+                case "sky":
+                    currColor = new Color32(140, 200, 230, 70);
+                    break;
+                case "violet":
+                    currColor = new Color32(170, 140, 230, 70);
+                    break;
+                case "white":
+                    currColor = new Color32(255, 255, 255, 70);
+                    break;
+                default:
+                    currColor = new Color32(45, 190, 240, 70);
+                    break;
+            }              
+
+            //change material properties            
+            bodyMat.SetColor("_Color", currColor);
+            //bodyMat.SetFloat("_Metallic", 0.2f);
+            //bodyMat.SetFloat("_Glossiness", 0.4f);
+
+        }        
     }
 }
