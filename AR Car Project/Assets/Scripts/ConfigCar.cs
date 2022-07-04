@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ConfigBtnPressed : MonoBehaviour
+public class ConfigCar : MonoBehaviour
 {
     public Text propertyText;
     public Text variantText;
@@ -15,7 +15,7 @@ public class ConfigBtnPressed : MonoBehaviour
     {   
         //display property text as objects name
         propertyText.text = transform.name;
-        //Initialize variant text e.g. "Choose steering"
+        //initialize variant text e.g. "Choose steering"
         variantText.text = "Choose " + propertyText.text.ToLower();
 
         bool isPropertyColor = propertyText.text == "Color";
@@ -31,6 +31,7 @@ public class ConfigBtnPressed : MonoBehaviour
         });
     }
     
+    //display next variant text
     string NextBtnPressed(List<string> variants, Text variantText)
     {
         int currVarIdx = variants.IndexOf(variantText.text);
@@ -49,6 +50,7 @@ public class ConfigBtnPressed : MonoBehaviour
         return variantText.text;
     }
 
+    //display previous variant text
     string PrevBtnPressed(List<string> variants, Text variantText)
     {
         int currVarIdx = variants.IndexOf(variantText.text);
@@ -67,6 +69,7 @@ public class ConfigBtnPressed : MonoBehaviour
         return variantText.text;        
     }
 
+    //change variant to current variant displayed
     void ChangeVariant(List<string> variants, string newVariant, bool isColor)
     {
         if(!isColor)
@@ -76,10 +79,12 @@ public class ConfigBtnPressed : MonoBehaviour
                 GameObject variantModel = GameObject.Find(variant);
                 if (variant == newVariant)
                 {
+                    //display new variant selected
                     variantModel.transform.localScale = new Vector3(1, 1, 1);
                 }
                 else
                 {
+                    //hide all other variants
                     variantModel.transform.localScale = new Vector3(0, 0, 0);
                 }
             }
@@ -132,11 +137,8 @@ public class ConfigBtnPressed : MonoBehaviour
                     break;
             }              
 
-            //change material properties            
+            //change material color            
             bodyMat.SetColor("_Color", currColor);
-            //bodyMat.SetFloat("_Metallic", 0.2f);
-            //bodyMat.SetFloat("_Glossiness", 0.4f);
-
         }        
     }
 }
