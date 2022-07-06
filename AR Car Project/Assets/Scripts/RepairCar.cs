@@ -1,68 +1,122 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using System;
+using System.Collections;
+
 public class RepairCar : MonoBehaviour
-{
-    public Button nextStepBtn, prevStepBtn;
+{   
+    //repair task buttons
     public Button repairSuspensionBtn, repairBrakesBtn, repairSteeringBtn, showOffBtn;
+    //instruction panel items
+    public Button nextStepBtn, prevStepBtn;
     public Text stepTitle, stepText;
     public Toggle checkBox;
     public InputField notes;
     public Button screenshotBtn;
     public RawImage image;
-    public Animator animator;
-    private int currStepIdx = 0;
+    //save protocol popup items
+    public Button saveBtn, cancelBtn, closePopupBtn;
+
+
+    private Protocol protocol;
+    private RepairTask currRepairTask;
+    private int currStepIdx;
+    private Animator animator;
+    
 
     void Start()
     {
-        //RepairTask currRepairTask = new RepairTask();
+        repairBrakesBtn.onClick.AddListener(() =>
+        {
+            currRepairTask = new RepairTask("Repair Brakes", new List<Step>() 
+            { 
+                new Step("Check if engine is off", "Wheelend", "BrakesS1"), 
+                new Step("Unscrew wheel nuts and pull out wheels", "Wheelend", "BrakesS2"), 
+                new Step("Remove disc brakes", "Wheelend", "BrakesS3"), 
+                new Step("Separate brake calipers and change pads") 
+            });
+            InitInfo(); //initialize display instruction text/info           
+        });
 
-        RepairTask repairSuspension = new RepairTask("Repair Suspension");
-        repairSuspension.Steps = new List<Step>()
-        { new Step("Step1 Susp"), new Step("Step2 Susp"), new Step("Step3 Susp") };
-        //repairSuspensionBtn.onClick.AddListener(() => { currRepairTask = repairSuspension; });
+        repairSuspensionBtn.onClick.AddListener(() =>
+        {
+            currRepairTask = new RepairTask("Repair Suspension", new List<Step>() 
+            {
+                new Step("Check if engine is off", "Body", "HoodOpen"),
+                new Step("Open the hood", "Car", "EngineLift"), 
+                new Step("Lift the engine out", "Car", "SpringLift"), 
+                new Step("Remove the springs and insert new")
+            });
+            InitInfo();
+        });
 
-        RepairTask repairBrakes = new RepairTask("Repair Brakes");
-        repairBrakes.Steps = new List<Step>()
-        {new Step("Check if engine is off") , new Step("Unscrew wheel nuts and pull out wheels"), new Step("Remove disc brakes"), new Step("Separate brake calipers and change pads")};
-        //repairBrakesBtn.onClick.AddListener(() => { currRepairTask = repairBrakes; });
+        repairSteeringBtn.onClick.AddListener(() =>
+        {
+            currRepairTask = new RepairTask("Repair Steering", new List<Step>() 
+            {
+                new Step("Check if engine is off", "Body", "HoodOpen"),
+                new Step("Open the hood", "Car", "EngineLift"),
+                new Step("Lift the engine out", "Car", "SteeringLift"),
+                new Step("Replace the rack with new one")
+            });
+            InitInfo();
+        });
 
-        RepairTask repairSteering = new RepairTask("Repair Steering");
-        repairSteering.Steps = new List<Step>()
-        { new Step("Step1 Steer"), new Step("Step2 Steer"), new Step("Step3 Steer") };
-        //repairSteeringBtn.onClick.AddListener(() => { currRepairTask = repairSteering; });
+        nextStepBtn.onClick.AddListener(() => ShowNextStep(currRepairTask.Steps));
+        prevStepBtn.onClick.AddListener(() => ShowPrevStep(currRepairTask.Steps));
 
-        //initialize repair step text
-        prevStepBtn.interactable = false;
-        stepTitle.text = "Step 0";
-        stepText.text = repairBrakes.Steps[currStepIdx].StepText;
-        checkBox.isOn = repairBrakes.Steps[currStepIdx].IsDone;
+        //initialize protocol
+        protocol = new Protocol($"Protocol {DateTime.Now.ToString()}", new List<RepairTask>());
 
-        nextStepBtn.onClick.AddListener(() => { ShowNextStep(repairBrakes.Steps); });
-        prevStepBtn.onClick.AddListener(() => { ShowPrevStep(repairBrakes.Steps); });
-        
+        //add repair task to protocol
+        saveBtn.onClick.AddListener(() => protocol.RepairTasks.Add(currRepairTask));
+
+        //bring back car original state or fully assembled
+        cancelBtn.onClick.AddListener(() => StartCoroutine(ResetCar(currRepairTask.Steps)));
+        closePopupBtn.onClick.AddListener(() => StartCoroutine(ResetCar(currRepairTask.Steps)));
+
+        showOffBtn.onClick.AddListener(() => protocol.GenerateProtocol(protocol.RepairTasks));
+
         screenshotBtn.onClick.AddListener(() => TakeScreenshot(0));
+    }
         
-        //temporarily showoffBtn is to generate protocol & show Screenshot
-        showOffBtn.onClick.AddListener(() => LoadScreenshot(0));
+
+    void InitInfo()
+    {
+        //initialize repair step variables 
+        currStepIdx = 0;
+        prevStepBtn.interactable = false;
+        nextStepBtn.interactable = true;
+        //initialize text and checkbox
+        stepTitle.text = "Step 0";
+        stepText.text = currRepairTask.Steps[0].StepText;
+        checkBox.isOn = currRepairTask.Steps[0].IsDone;
+        notes.text = currRepairTask.Steps[0].Notes;
+        //disable repair task buttons else all variable infos are reloaded and stored infos lost
+        repairSteeringBtn.enabled = false;
+        repairSuspensionBtn.enabled = false;
+        repairBrakesBtn.enabled = false;
     }
 
     void ShowNextStep(List<Step> steps)
     {
         prevStepBtn.interactable = true;
         
-        Step currStep = steps[currStepIdx];
+        Step currStep = steps[currStepIdx]; //current step
         //store infos from checkbox and notes for currStep
         currStep.IsDone = checkBox.isOn;
         currStep.Notes = notes.text;
 
         if (currStepIdx < steps.Count - 1)
         {
+            //show animation            
+            animator = GameObject.Find(currStep.AnimatorName).GetComponent<Animator>();
+            animator.Play(currStep.AnimationName);
+            //go to next step
             currStepIdx++;
-            //show animation
-            animator.SetTrigger($"S{currStepIdx}Trigg"); //Triggers e.g. S1Trigg for Step1
+            currStep = steps[currStepIdx]; //update current step
         }
         else
         {
@@ -70,11 +124,11 @@ public class RepairCar : MonoBehaviour
             nextStepBtn.interactable = false;
         }        
         //update text, title
-        stepText.text = steps[currStepIdx].StepText;
+        stepText.text = currStep.StepText;
         stepTitle.text = "Step " + currStepIdx.ToString();
         //load info from checkbox and notes for newStep
-        checkBox.isOn = steps[currStepIdx].IsDone;
-        notes.text = steps[currStepIdx].Notes;
+        checkBox.isOn = currStep.IsDone;
+        notes.text = currStep.Notes;
 
     }
 
@@ -82,25 +136,42 @@ public class RepairCar : MonoBehaviour
     {
         nextStepBtn.interactable = true;        
 
-        Step currStep = steps[currStepIdx];
+        Step currStep = steps[currStepIdx]; //current step
         //store info from checkbox for currStep
         currStep.IsDone = checkBox.isOn;
         currStep.Notes = notes.text;
         if (currStepIdx > 0)
-        {
-            //show animation
-            animator.SetTrigger($"S{currStepIdx}revTrigg");
+        {   
+            //go back a step
             currStepIdx--;
+            currStep = steps[currStepIdx]; //update current step            
+            //show animation             
+            animator = GameObject.Find(currStep.AnimatorName).GetComponent<Animator>();
+            animator.Play(currStep.AnimationName + "rev"); //reverse step
         }
         else
         {
             prevStepBtn.interactable = false;
         }
-        stepText.text = steps[currStepIdx].StepText;
+        stepText.text = currStep.StepText;
         stepTitle.text = "Step " + currStepIdx.ToString();
         //load info from checkbox for newStep
-        checkBox.isOn = steps[currStepIdx].IsDone;
-        notes.text = steps[currStepIdx].Notes;
+        checkBox.isOn = currStep.IsDone;
+        notes.text = currStep.Notes;
+    }
+
+    IEnumerator ResetCar(List<Step> steps)
+    {
+        int i = currStepIdx - 1;
+        while (i >= 0)
+        {
+            Step currStep = steps[i];
+            animator = GameObject.Find(currStep.AnimatorName).GetComponent<Animator>();
+            animator.Play(currStep.AnimationName + "rev"); //reverse step
+            //wait till animation is over
+            yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+            i--;
+        }        
     }
 
     void TakeScreenshot(int stepIdx)
@@ -118,9 +189,4 @@ public class RepairCar : MonoBehaviour
         image.texture = myTexture;        
     }
 
-    //reset all toggles to false and removes all data
-    void ResetBtn()
-    {
-
-    }
 }
