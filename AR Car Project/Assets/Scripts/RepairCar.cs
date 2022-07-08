@@ -97,7 +97,6 @@ public class RepairCar : MonoBehaviour
             protocol.GenerateHistory(protocol.RepairTasks, history);
         });
     }
-        
 
     void InitInfo()
     {
