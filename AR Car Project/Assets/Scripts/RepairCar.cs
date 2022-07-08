@@ -1,30 +1,36 @@
+using System;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
-using System;
-using System.Collections;
+using TMPro;
 
 public class RepairCar : MonoBehaviour
-{   
+{
     //repair task buttons
-    public Button repairSuspensionBtn, repairBrakesBtn, repairSteeringBtn, showOffBtn;
+    public Button repairSuspensionBtn, repairBrakesBtn, repairSteeringBtn, showProtBtn;
     //instruction panel items
-    public Button nextStepBtn, prevStepBtn;
+    public Button nextStepBtn, prevStepBtn, screenshotBtn, closeBtn;
     public Text stepTitle, stepText;
     public Toggle checkBox;
     public InputField notes;
-    public Button screenshotBtn;
-    public RawImage image;
+    public GameObject ssTaken; //screenshot taken text
     //save protocol popup items
-    public Button saveBtn, cancelBtn, closePopupBtn;
-
+    public Button saveBtn;
+    //display protocol items
+    public TextMeshProUGUI protocolName;
+    public InputField technician, location, problem, conclusion;
+    public GameObject repTaskPrefab, stepPrefab;
+    public Transform prefabParent;
+    public Texture2D nullTex;
+    public Button showHistory, closeProtBtn;
+    public TextMeshProUGUI history;
 
     private Protocol protocol;
     private RepairTask currRepairTask;
     private int currStepIdx;
     private Animator animator;
-    
 
     void Start()
     {
@@ -64,22 +70,32 @@ public class RepairCar : MonoBehaviour
             InitInfo();
         });
 
+        //instruction panel
         nextStepBtn.onClick.AddListener(() => ShowNextStep(currRepairTask.Steps));
         prevStepBtn.onClick.AddListener(() => ShowPrevStep(currRepairTask.Steps));
+        screenshotBtn.onClick.AddListener(() => StartCoroutine(TakeScreenshot()));
+        closeBtn.onClick.AddListener(() =>
+        {
+            //bring back car original state or fully assembled
+            StartCoroutine(ResetCar(currRepairTask.Steps));
+            StoreStepInfo(currRepairTask.Steps[currStepIdx]);                    
+        });
 
         //initialize protocol
-        protocol = new Protocol($"Protocol {DateTime.Now.ToString()}", new List<RepairTask>());
+        protocol = new Protocol($"P {DateTime.Now.ToString()}", new List<RepairTask>());
 
-        //add repair task to protocol
-        saveBtn.onClick.AddListener(() => protocol.RepairTasks.Add(currRepairTask));
+        //save or add repair task to protocol
+        saveBtn.onClick.AddListener(() => protocol.RepairTasks.Add(currRepairTask));      
 
-        //bring back car original state or fully assembled
-        cancelBtn.onClick.AddListener(() => StartCoroutine(ResetCar(currRepairTask.Steps)));
-        closePopupBtn.onClick.AddListener(() => StartCoroutine(ResetCar(currRepairTask.Steps)));
-
-        showOffBtn.onClick.AddListener(() => protocol.GenerateProtocol(protocol.RepairTasks));
-
-        screenshotBtn.onClick.AddListener(() => TakeScreenshot(0));
+        //protocol popup
+        showProtBtn.onClick.AddListener(GenerateProtocol);
+        closeProtBtn.onClick.AddListener(StoreProtocolInfo);
+        showHistory.onClick.AddListener(() =>
+        {
+            //store infos from inputfields
+            StoreProtocolInfo();
+            protocol.GenerateHistory(protocol.RepairTasks, history);
+        });
     }
         
 
@@ -94,7 +110,7 @@ public class RepairCar : MonoBehaviour
         stepText.text = currRepairTask.Steps[0].StepText;
         checkBox.isOn = currRepairTask.Steps[0].IsDone;
         notes.text = currRepairTask.Steps[0].Notes;
-        //disable repair task buttons else all variable infos are reloaded and stored infos lost
+        //disable repair task buttons
         repairSteeringBtn.enabled = false;
         repairSuspensionBtn.enabled = false;
         repairBrakesBtn.enabled = false;
@@ -105,9 +121,7 @@ public class RepairCar : MonoBehaviour
         prevStepBtn.interactable = true;
         
         Step currStep = steps[currStepIdx]; //current step
-        //store infos from checkbox and notes for currStep
-        currStep.IsDone = checkBox.isOn;
-        currStep.Notes = notes.text;
+        StoreStepInfo(currStep);
 
         if (currStepIdx < steps.Count - 1)
         {
@@ -122,14 +136,8 @@ public class RepairCar : MonoBehaviour
         {
             //disable next button if last element reached
             nextStepBtn.interactable = false;
-        }        
-        //update text, title
-        stepText.text = currStep.StepText;
-        stepTitle.text = "Step " + currStepIdx.ToString();
-        //load info from checkbox and notes for newStep
-        checkBox.isOn = currStep.IsDone;
-        notes.text = currStep.Notes;
-
+        }
+        UpdateStepInfo(currStep);       
     }
 
     void ShowPrevStep(List<Step> steps)
@@ -137,9 +145,8 @@ public class RepairCar : MonoBehaviour
         nextStepBtn.interactable = true;        
 
         Step currStep = steps[currStepIdx]; //current step
-        //store info from checkbox for currStep
-        currStep.IsDone = checkBox.isOn;
-        currStep.Notes = notes.text;
+        StoreStepInfo(currStep);
+
         if (currStepIdx > 0)
         {   
             //go back a step
@@ -153,11 +160,35 @@ public class RepairCar : MonoBehaviour
         {
             prevStepBtn.interactable = false;
         }
-        stepText.text = currStep.StepText;
+        UpdateStepInfo(currStep);
+    }
+    
+    void StoreStepInfo(Step step)
+    {
+        //store infos from checkbox and notes for currStep
+        step.IsDone = checkBox.isOn;
+        step.Notes = notes.text;
+
+        //store texture in step
+        Texture2D screenshotTex = new Texture2D(73, 73);
+        if (File.Exists(Application.persistentDataPath + "/temp.png"))
+        //if(File.Exists(Application.dataPath + "/temp.png"))
+        {
+            var imageData = File.ReadAllBytes(Application.persistentDataPath + "/temp.png");
+            //var imageData = File.ReadAllBytes(Application.dataPath + "/temp.png");
+            screenshotTex.LoadImage(imageData);
+            step.ScreenshotTex = screenshotTex;
+            File.Delete(Application.persistentDataPath + "/temp.png");
+            //File.Delete(Application.dataPath + "/temp.png");
+        }        
+    }
+
+    void UpdateStepInfo(Step step)
+    {
+        stepText.text = step.StepText;
         stepTitle.text = "Step " + currStepIdx.ToString();
-        //load info from checkbox for newStep
-        checkBox.isOn = currStep.IsDone;
-        notes.text = currStep.Notes;
+        checkBox.isOn = step.IsDone;
+        notes.text = step.Notes;
     }
 
     IEnumerator ResetCar(List<Step> steps)
@@ -174,19 +205,69 @@ public class RepairCar : MonoBehaviour
         }        
     }
 
-    void TakeScreenshot(int stepIdx)
+    void GenerateProtocol()
     {
-        //change screenshot folder and name
-        ScreenCapture.CaptureScreenshot($"{stepIdx.ToString()}.png");
+        protocolName.text = protocol.ProtocolName;
+
+        float moveRepTitle = 0f; //space between repair task title
+        float movePanel = 0f; //space between step panels
+
+        for (int repTaskIdx = 0; repTaskIdx < protocol.RepairTasks.Count; repTaskIdx++)
+        {
+            RepairTask repTask = protocol.RepairTasks[repTaskIdx];
+
+            //load repair task title
+            GameObject repTaskTitle = Instantiate(repTaskPrefab);
+            repTaskTitle.transform.SetParent(prefabParent, false);
+            repTaskTitle.transform.Translate(0, moveRepTitle, 0);
+            repTaskTitle.name = $"R{repTaskIdx}";
+            Text repTaskText = GameObject.Find($"{repTaskTitle.name}/TitleText").GetComponent<Text>();           
+            repTaskText.text = repTask.TaskName;            
+
+            //create and load steps
+            for (int stepIdx = 0; stepIdx < repTask.Steps.Count; stepIdx++)
+            {
+                Step step = repTask.Steps[stepIdx];
+
+                GameObject stepPanel = Instantiate(stepPrefab);
+                stepPanel.transform.SetParent(prefabParent, false);
+                stepPanel.transform.Translate(0, movePanel, 0); //create panels one below another
+                stepPanel.name = $"S{stepIdx}R{repTaskIdx}";
+                //load step id
+                TextMeshProUGUI stepId = GameObject.Find($"{stepPanel.name}/StepId").GetComponent<TextMeshProUGUI>();
+                stepId.text = $"Step {stepIdx}";
+                //load screenshot
+                RawImage screenshot = GameObject.Find($"{stepPanel.name}/Screenshot").GetComponent<RawImage>();
+                screenshot.texture = step.ScreenshotTex == null ? nullTex : step.ScreenshotTex;  
+                //load notes
+                TextMeshProUGUI protocolNotes = GameObject.Find($"{stepPanel.name}/Notes").GetComponent<TextMeshProUGUI>();
+                protocolNotes.text = step.Notes;
+                //load isStepComplete 
+                Toggle isDone = GameObject.Find($"{stepPanel.name}/Checkbox").GetComponent<Toggle>();
+                isDone.isOn = step.IsDone;
+
+                movePanel -= 400f;
+            }
+            movePanel -= 60f;
+            moveRepTitle = movePanel;
+        }
     }
 
-    void LoadScreenshot(int stepIdx)
+    void StoreProtocolInfo()
     {
-        Texture2D myTexture = new Texture2D(73, 73);        
-        //if direct save in Application.persistentDataPath => no problem, if /.../... => problem
-        var imageData = File.ReadAllBytes(Application.persistentDataPath + $"/{stepIdx.ToString()}.png");
-        myTexture.LoadImage(imageData);
-        image.texture = myTexture;        
+        protocol.Technician = technician.text;
+        protocol.Location = location.text;
+        protocol.Problem = problem.text;
+        protocol.Conclusion = conclusion.text;
+    }
+
+    IEnumerator TakeScreenshot()
+    {
+        ScreenCapture.CaptureScreenshot("temp.png");
+        //ScreenCapture.CaptureScreenshot(Application.dataPath + "/temp.png"); 
+        ssTaken.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        ssTaken.SetActive(false);
     }
 
 }
