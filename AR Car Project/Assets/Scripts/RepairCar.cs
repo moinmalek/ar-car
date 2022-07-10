@@ -16,6 +16,8 @@ public class RepairCar : MonoBehaviour
     public Toggle checkBox;
     public InputField notes;
     public GameObject ssTaken; //screenshot taken text
+    //controller items
+    public Button fwdBtn, bckBtn, midBtn;
     //save protocol popup items
     public Button saveBtn;
     //display protocol items
@@ -109,10 +111,12 @@ public class RepairCar : MonoBehaviour
         stepText.text = currRepairTask.Steps[0].StepText;
         checkBox.isOn = currRepairTask.Steps[0].IsDone;
         notes.text = currRepairTask.Steps[0].Notes;
-        //disable repair task buttons
-        repairSteeringBtn.enabled = false;
-        repairSuspensionBtn.enabled = false;
-        repairBrakesBtn.enabled = false;
+        //disable all other buttons
+        List<Button> btns = new List<Button>() { repairSteeringBtn, repairSuspensionBtn, repairBrakesBtn , fwdBtn, bckBtn, midBtn };
+        foreach(Button btn in btns)
+        {
+            btn.enabled = false;
+        }     
     }
 
     void ShowNextStep(List<Step> steps)

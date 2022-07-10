@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 //top node (level 0)
@@ -19,7 +18,7 @@ public class Protocol
         RepairTasks = repairTasks;
     }
     
-    public void GenerateHistory(List<RepairTask> repairTasks, TextMeshProUGUI history) //InputField username, InputField location, InputField problem, InputField conclusion,
+    public void GenerateHistory(List<RepairTask> repairTasks, TextMeshProUGUI history)
     {        
         string addLines = ProtocolName + "\n";     
         addLines += $"Technician: {Technician}\nLocation: {Location}\nProblem: {Problem}\nConclusion: {Conclusion}\n";
