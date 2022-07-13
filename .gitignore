@@ -9,11 +9,13 @@
 [Bb]uilds/
 [Ll]ogs/
 [Mm]emoryCaptures/
-[Mm]aterials/
-[Uu]serSettings
+[Uu]ser[Ss]ettings/
+
+# Recordings are not necessary
+/[Rr]ecordings/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
-!/[Aa]ssets/**/*.meta
+![Aa]ssets/**/*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 [Aa]ssets/AssetStoreTools*
@@ -55,10 +57,10 @@ sysinfo.txt
 
 # Builds
 *.apk
+*.aab
 *.unitypackage
+*.app
 
 # Crashlytics generated file
 crashlytics-build.properties
-
-
 
