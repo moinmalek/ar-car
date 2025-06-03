@@ -9,7 +9,7 @@ It lets you configure your car using different variants for assemblies like,
 ### Digital repair manual
 It shows instructions to repair different assemblies for the car. One can do the following.
 * Observe step-by-step repair instructions with animation.
-* Create notes and screenshot while performing the repair task.
+* Create notes and screenshots while performing the repair task.
 * Generate and view the entire protocol and product history.
 ### IoT
 It lets you control the physical world with the virtual world (AR application).
