@@ -12,6 +12,7 @@ public sealed class StepProtocolRowView : MonoBehaviour
     [SerializeField] TextMeshProUGUI notes;
     [SerializeField] Toggle checkBox;
 
+    /// <summary>Updates TMP and RawImage from protocol step data.</summary>
     public void Apply(int stepIndex, Step step, Texture2D nullTex)
     {
         stepId.text = $"Step {stepIndex}";

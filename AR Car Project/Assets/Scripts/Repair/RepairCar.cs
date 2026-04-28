@@ -257,6 +257,7 @@ public sealed class RepairCar : MonoBehaviour
         step.IsDone = checkBox.isOn;
         step.Notes = notes.text;
 
+        // ScreenCapture writes asynchronously; path matches CaptureScreenshot("temp.png") → persistentDataPath/temp.png
         if (!File.Exists(TempScreenshotPath))
             return;
 
@@ -305,6 +306,7 @@ public sealed class RepairCar : MonoBehaviour
                 && !string.IsNullOrEmpty(currStep.AnimationName))
             {
                 anim.Play(currStep.AnimationName + "rev", 0, 0f);
+                // Length comes from current layer state; assumes controller clips match reverse naming (+ "rev").
                 yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
             }
             i--;

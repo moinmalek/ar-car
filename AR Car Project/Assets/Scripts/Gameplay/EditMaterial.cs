@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Toggles material between opaque (main UI) and fade (configurator) modes.
+/// Swaps body material between opaque (main view) and transparent fade (configurator).
 /// </summary>
 public sealed class EditMaterial : MonoBehaviour
 {
@@ -18,6 +18,7 @@ public sealed class EditMaterial : MonoBehaviour
         openConfigPageBtn.onClick.AddListener(ChangeToFade);
     }
 
+    /// <summary>Opaque standard shader setup for main navigation.</summary>
     public void ChangeToOpaque()
     {
         material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
@@ -33,6 +34,7 @@ public sealed class EditMaterial : MonoBehaviour
         material.SetFloat("_Glossiness", 0.5f);
     }
 
+    /// <summary>Alpha-blended setup for overlay/configurator visibility.</summary>
     public void ChangeToFade()
     {
         material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);

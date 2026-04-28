@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 
 /// <summary>
-/// Blynk bridge: brake lights and door sensor. Token must be set in the Inspector or config asset — never committed (issue: security).
+/// Blynk bridge: brake lights and door sensor.
 /// </summary>
 public sealed class IoT : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public sealed class IoT : MonoBehaviour
     [SerializeField] Button closeStepBtn;
     [SerializeField] Animator animator;
 
-    [Tooltip("Blynk device auth token. Prefer a ScriptableObject / remote config in production; do not commit real tokens.")]
+    [Tooltip("Blynk device auth token — assign locally; never commit real credentials.")]
     [SerializeField] string blynkToken;
 
     [SerializeField] string getUrlBase = "https://blynk.cloud/external/api/get?token=";
@@ -93,6 +93,7 @@ public sealed class IoT : MonoBehaviour
                 if (int.TryParse(body.Trim(), out int v))
                     _sensorVal = v;
 
+                // Physical sensor threshold drives virtual door (original behaviour).
                 OpenDoor();
             }
 

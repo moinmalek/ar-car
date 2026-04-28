@@ -5,10 +5,11 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Exits play mode in the Editor and quits on device builds (issue #10).
+/// Exits play mode in the Editor; calls <see cref="Application.Quit"/> on device builds.
 /// </summary>
 public sealed class QuitManager : MonoBehaviour
 {
+    /// <summary>Called from UI button.</summary>
     public void QuitGame()
     {
 #if UNITY_EDITOR

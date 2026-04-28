@@ -904,6 +904,11 @@ MonoBehaviour:
   nextBtn: {fileID: 1973639914}
   prevBtn: {fileID: 2070141454}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Ackerman
+    root: {fileID: 3220296260828042299}
+  - variantName: Anti-Ackerman
+    root: {fileID: 5240033597221946331}
 --- !u!1 &125035126
 GameObject:
   m_ObjectHideFlags: 0
@@ -3482,6 +3487,7 @@ MonoBehaviour:
   nextBtn: {fileID: 2051930702}
   prevBtn: {fileID: 590684788}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots: []
 --- !u!1 &365201561
 GameObject:
   m_ObjectHideFlags: 0
@@ -4557,6 +4563,11 @@ MonoBehaviour:
   nextBtn: {fileID: 1476018313}
   prevBtn: {fileID: 697182297}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Normal
+    root: {fileID: 4265199359665159730}
+  - variantName: Wing
+    root: {fileID: 4184608599152345288}
 --- !u!1 &578153793
 GameObject:
   m_ObjectHideFlags: 0
@@ -7568,6 +7579,11 @@ MonoBehaviour:
   nextBtn: {fileID: 135863080}
   prevBtn: {fileID: 595440768}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Engine1
+    root: {fileID: 3177887253448588578}
+  - variantName: Engine2
+    root: {fileID: 3513637037763525966}
 --- !u!1 &840404948
 GameObject:
   m_ObjectHideFlags: 0
@@ -9393,6 +9409,11 @@ MonoBehaviour:
   nextBtn: {fileID: 948521494}
   prevBtn: {fileID: 191394644}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Radiator1
+    root: {fileID: 2209731259293226618}
+  - variantName: Radiator2
+    root: {fileID: 7673388280156527017}
 --- !u!1 &1091242255
 GameObject:
   m_ObjectHideFlags: 0
@@ -9753,6 +9774,11 @@ MonoBehaviour:
   nextBtn: {fileID: 2138151871}
   prevBtn: {fileID: 940947902}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Semi-dependent
+    root: {fileID: 926717606158944418}
+  - variantName: Independent
+    root: {fileID: 7852997467494501296}
 --- !u!1 &1165683889
 GameObject:
   m_ObjectHideFlags: 0
@@ -15794,6 +15820,11 @@ MonoBehaviour:
   nextBtn: {fileID: 523150327}
   prevBtn: {fileID: 1518566218}
   bodyMat: {fileID: 2100000, guid: d796cd947be0fc341aeee42ba0f62719, type: 2}
+  variantRoots:
+  - variantName: Single
+    root: {fileID: 1185013420299061557}
+  - variantName: Double
+    root: {fileID: 4145934784602510832}
 --- !u!1 &2051930700
 GameObject:
   m_ObjectHideFlags: 0

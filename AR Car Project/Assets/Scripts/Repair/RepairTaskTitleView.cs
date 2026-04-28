@@ -8,5 +8,6 @@ public sealed class RepairTaskTitleView : MonoBehaviour
 {
     [SerializeField] Text titleText;
 
+    /// <summary>Legacy UI Text bound in the prefab.</summary>
     public Text TitleText => titleText;
 }
