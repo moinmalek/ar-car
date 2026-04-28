@@ -10,9 +10,10 @@ plugins {
 
 // Work around duplicate Android namespace: both arcore_client and unityandroidpermissions
 // ship manifests with package/namespace com.google.ar.core. AGP 9 manifest merger rejects that.
+// (Also patched at export time by Assets/Editor/AndroidGradleArCoreNamespaceFix.cs; see gradleTemplate.properties.)
 subprojects { sub ->
-    sub.afterEvaluate {
-        if (sub.name == 'unityandroidpermissions' && sub.plugins.hasPlugin('com.android.library')) {
+    sub.plugins.withId('com.android.library') {
+        if (sub.name == 'unityandroidpermissions') {
             sub.android.namespace = 'com.unity3d.plugin.unityandroidpermissions'
         }
     }
