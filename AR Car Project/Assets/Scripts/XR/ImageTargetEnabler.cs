@@ -31,14 +31,17 @@ public class ImageTargetEnabler : MonoBehaviour
 
     void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
     {
-        foreach (var _ in args.removed)
+        // AR Foundation 6+: removed is KeyValuePair<TrackableId, ARTrackedImage>, not ARTrackedImage.
+        if (args.removed.Count > 0 && imageTarget != null)
             imageTarget.SetActive(false);
 
-        foreach (var img in args.added)
-            ApplyTrackedImage(img);
+        var added = args.added;
+        for (int i = 0; i < added.Count; i++)
+            ApplyTrackedImage(added[i]);
 
-        foreach (var img in args.updated)
-            ApplyTrackedImage(img);
+        var updated = args.updated;
+        for (int i = 0; i < updated.Count; i++)
+            ApplyTrackedImage(updated[i]);
     }
 
     void ApplyTrackedImage(ARTrackedImage img)
