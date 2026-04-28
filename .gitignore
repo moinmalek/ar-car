@@ -70,3 +70,7 @@ crashlytics-build.properties
 # Unity build temp files
 .utmp/
 
+# Local-only Blynk token for IoT (copy from BlynkToken.example.txt)
+AR Car Project/Assets/Resources/BlynkToken.txt
+AR Car Project/Assets/Resources/BlynkToken.txt.meta
+
