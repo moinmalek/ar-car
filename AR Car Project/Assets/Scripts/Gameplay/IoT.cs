@@ -37,11 +37,7 @@ public sealed class IoT : MonoBehaviour
         closeStepBtn.onClick.AddListener(StopPollingDoorSensor);
 
         if (string.IsNullOrEmpty(_effectiveToken))
-        {
-            Debug.LogWarning(
-                "IoT: No Blynk token (Inspector, env BLYNK_TOKEN, or Resources/BlynkToken.txt). Brake lights and door sensor polling are disabled.");
-            return;
-        }
+            return; // Blynk optional: no token means brake lights / remote sensor stay off; door buttons still work above.
 
         string tokenParam = _effectiveToken;
         bckBtn.onClick.AddListener(() => StartCoroutine(UpdateValue($"{updateUrlBase}{tokenParam}&v1=1")));
