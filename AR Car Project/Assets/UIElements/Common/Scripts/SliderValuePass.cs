@@ -1,21 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SliderValuePass : MonoBehaviour {
+/// <summary>
+/// Updates a <see cref="Text"/> label from a normalized slider value (0–1), typically wired from UI events.
+/// </summary>
+public sealed class SliderValuePass : MonoBehaviour
+{
+    [SerializeField] Text progress;
 
-	Text progress;
+    void Awake()
+    {
+        if (progress == null)
+            progress = GetComponent<Text>();
+    }
 
-	// Use this for initialization
-	void Start () {
-		progress = GetComponent<Text>();
-
-	}
-	
-	public  void UpdateProgress (float content) {
-		progress.text = Mathf.Round( content*100) +"%";
-	}
-
-
+    public void UpdateProgress(float normalizedValue)
+    {
+        if (progress == null)
+            return;
+        progress.text = Mathf.Round(normalizedValue * 100f) + "%";
+    }
 }

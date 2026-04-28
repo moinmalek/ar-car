@@ -1,42 +1,38 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-public class CircleSlider : MonoBehaviour
-{
- 
-     public bool b=true;
-	 public Image image;
-	 public float speed=0.5f;
 
-  float time =0f;
-  
-  public Text progress;
-  
-  void Start()
-  {
-	  
-	image = GetComponent<Image>();
-  }
-  
+/// <summary>
+/// Fills a radial <see cref="Image"/> over time and optionally mirrors progress to a <see cref="Text"/> label.
+/// </summary>
+public sealed class CircleSlider : MonoBehaviour
+{
+    [FormerlySerializedAs("b")]
+    [SerializeField] bool animate = true;
+    [SerializeField] Image image;
+    [SerializeField] float speed = 0.5f;
+    [SerializeField] Text progress;
+
+    float _time;
+
+    void Awake()
+    {
+        if (image == null)
+            image = GetComponent<Image>();
+    }
+
     void Update()
     {
-		if(b)
-		{
-			time+=Time.deltaTime*speed;
-			image.fillAmount= time;
-			if(progress)
-			{
-				progress.text = (int)(image.fillAmount*100)+"%";
-			}
-			
-        if(time>1)
-		{
-						
-			time=0;
-		}
+        if (!animate || image == null)
+            return;
+
+        _time += Time.deltaTime * speed;
+        image.fillAmount = _time;
+
+        if (progress != null)
+            progress.text = (int)(image.fillAmount * 100f) + "%";
+
+        if (_time > 1f)
+            _time = 0f;
     }
-	}
-	
-	
 }

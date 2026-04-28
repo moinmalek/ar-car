@@ -1,37 +1,34 @@
-﻿ 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-public class SimpleProgress1 : MonoBehaviour
+
+/// <summary>
+/// Linear fill animation on an <see cref="Image"/> (horizontal fill amount).
+/// </summary>
+public sealed class SimpleProgress1 : MonoBehaviour
 {
+    [FormerlySerializedAs("b")]
+    [SerializeField] bool animate = true;
+    [SerializeField] Image image;
+    [SerializeField] float speed = 1f;
 
-    public bool b = true;
-    public Image image;
-    public float speed;
-    float time = 0f;
+    float _time;
 
-    public void Start()
+    void Awake()
     {
- 
-        image = GetComponent<Image>();
+        if (image == null)
+            image = GetComponent<Image>();
     }
 
     void Update()
     {
-        if (b)
-        {
-            time += Time.deltaTime * speed;
-            image.fillAmount = time;
-  
+        if (!animate || image == null)
+            return;
 
-            if (time > 1)
-            {
+        _time += Time.deltaTime * speed;
+        image.fillAmount = _time;
 
-                time = 0;
-            }
-        }
+        if (_time > 1f)
+            _time = 0f;
     }
-
-
 }

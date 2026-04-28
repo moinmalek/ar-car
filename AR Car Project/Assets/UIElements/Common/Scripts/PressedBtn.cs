@@ -1,53 +1,47 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PressedBtn : MonoBehaviour , IPointerDownHandler ,IPointerClickHandler,IPointerEnterHandler,IPointerExitHandler
+/// <summary>
+/// Scales an optional child icon on pointer hover / press for tactile feedback.
+/// </summary>
+public sealed class PressedBtn : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerEnterHandler,
+    IPointerExitHandler
 {
+    const float PressedScale = 1.2f;
 
-    Button btn;
+    [FormerlySerializedAs("btn")]
+    [SerializeField] Button button;
+    [FormerlySerializedAs("myIcon")]
+    [SerializeField] Transform icon;
 
-    Transform myIcon;
-
-    private void Start()
+    void Awake()
     {
-        btn = GetComponent<Button>();
+        if (button == null)
+            button = GetComponent<Button>();
 
-        if(transform.childCount>0)
-              myIcon = transform.GetChild(0);
-    }
- 
-
-    public  void OnClick () {
-
-        if(myIcon!=null)
-        myIcon.localScale = Vector3.one ;
-	}
-
-    public void OnPressed () {
-        if (myIcon != null)
-            myIcon.localScale = Vector3.one * 1.2f;
+        if (icon == null && transform.childCount > 0)
+            icon = transform.GetChild(0);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnClick()
     {
-        OnPressed();
+        if (icon != null)
+            icon.localScale = Vector3.one;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPressed()
     {
-    //    OnClick();
+        if (icon != null)
+            icon.localScale = Vector3.one * PressedScale;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnPressed();
-    }
+    public void OnPointerDown(PointerEventData eventData) => OnPressed();
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        OnClick();
-    }
+    public void OnPointerClick(PointerEventData eventData) { }
+
+    public void OnPointerEnter(PointerEventData eventData) => OnPressed();
+
+    public void OnPointerExit(PointerEventData eventData) => OnClick();
 }
