@@ -15,3 +15,8 @@ It shows instructions to repair different assemblies for the car. One can do the
 It lets you control the physical world with the virtual world (AR application).
 * AR app (virtual) is used to turn on/off the brake lights (physical).
 * Touch sensor (physical) is used to open the door of the car (virtual).
+
+## Getting Started
+Download this image for image tracking
+<img width="1600" height="1060" alt="car" src="https://github.com/user-attachments/assets/5fb5f8b9-72c4-4d26-b8e6-62bd9b05232c" />
+
