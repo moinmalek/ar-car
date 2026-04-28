@@ -1,17 +1,29 @@
 #if UNITY_EDITOR
 using System.IO;
 using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEditor.Android;
 
 /// <summary>
-/// Post-processes the Gradle project Unity exports before <c>gradlew</c> runs.
+/// Applies Android build settings before Unity exports Gradle, then patches the generated project.
 /// </summary>
-class AndroidGradleArCoreNamespaceFix : IPostGenerateGradleAndroidProject
+class AndroidGradleArCoreNamespaceFix : IPreprocessBuildWithReport, IPostGenerateGradleAndroidProject
 {
     const string TargetNamespace = "com.unity3d.plugin.unityandroidpermissions";
     const string UnityPlayerActivity = "com.unity3d.player.UnityPlayerActivity";
 
     public int callbackOrder => 0;
+
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        if (report.summary.platform != BuildTarget.Android)
+            return;
+
+        // Unity Build And Run launches UnityPlayerActivity through ADB for this project.
+        PlayerSettings.Android.applicationEntry = AndroidApplicationEntry.Activity;
+    }
 
     public void OnPostGenerateGradleAndroidProject(string path)
     {
