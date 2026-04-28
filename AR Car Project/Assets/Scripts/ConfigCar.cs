@@ -38,7 +38,8 @@ public sealed class ConfigCar : MonoBehaviour
                 _variantByName[vr.VariantName] = vr.Root;
         }
 
-        if (propertyText == null || propertyText.text == "Color")
+        // Use GameObject name — label text may still be placeholder ("PropertyText") before Start().
+        if (propertyText == null || transform.name == "Color")
             return;
 
         for (int i = 0; i < variants.Count; i++)
