@@ -9317,6 +9317,9 @@ MonoBehaviour:
   okBtn: {fileID: 8277904187734646854}
   closeStepBtn: {fileID: 1397174154}
   animator: {fileID: 3456807736349958163}
+  blynkToken: 
+  getUrlBase: https://blynk.cloud/external/api/get?token=
+  updateUrlBase: https://blynk.cloud/external/api/update?token=
 --- !u!4 &1064460300
 Transform:
   m_ObjectHideFlags: 0
@@ -17237,6 +17240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5672684568260752696}
   - component: {fileID: 5672684568260752697}
+  - component: {fileID: 5672684568260752698}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
@@ -22398,6 +22402,7 @@ MonoBehaviour:
   showHistory: {fileID: 1469635017}
   closeProtBtn: {fileID: 320943036}
   history: {fileID: 818182914}
+  animatorBindings: {fileID: 5672684568260752698}
 --- !u!224 &3068501790835691558
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26872,6 +26877,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5672684568260752698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183578317406911172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6f0a4c1d3e5f8a92021222324252627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  namedAnimators:
+  - objectName: Wheelend
+    animator: {fileID: 2074642561}
+  - objectName: Body
+    animator: {fileID: 3456807736349958163}
+  - objectName: Car
+    animator: {fileID: 5672684568260752697}
+  idleStateName: Empty
 --- !u!4 &5673203565983245810
 Transform:
   m_ObjectHideFlags: 0

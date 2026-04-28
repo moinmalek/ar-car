@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EditMaterial : MonoBehaviour
+/// <summary>
+/// Toggles material between opaque (main UI) and fade (configurator) modes.
+/// </summary>
+public sealed class EditMaterial : MonoBehaviour
 {
-    public Button openMainPageBtn, openConfigPageBtn;
+    [SerializeField] Button openMainPageBtn;
+    [SerializeField] Button openConfigPageBtn;
 
-    public Material material;
-    public enum BlendMode { Opaque, Cutout, Fade, Transparent }    
+    [SerializeField] Material material;
 
     void Start()
     {
