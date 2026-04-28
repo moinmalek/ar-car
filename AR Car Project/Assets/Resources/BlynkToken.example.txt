@@ -1,0 +1,4 @@
+# Copy this file to BlynkToken.txt (same folder) and replace this entire file
+# with your Blynk device auth token on a single line. BlynkToken.txt is gitignored.
+
+YOUR_BLYNK_TOKEN_HERE

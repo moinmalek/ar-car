@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -15,7 +16,7 @@ public sealed class IoT : MonoBehaviour
     [SerializeField] Button closeStepBtn;
     [SerializeField] Animator animator;
 
-    [Tooltip("Blynk device auth token — assign locally; never commit real credentials.")]
+    [Tooltip("Blynk device auth token — assign locally; never commit real credentials. Optional: env BLYNK_TOKEN or Assets/Resources/BlynkToken.txt (gitignored).")]
     [SerializeField] string blynkToken;
 
     [SerializeField] string getUrlBase = "https://blynk.cloud/external/api/get?token=";
@@ -25,21 +26,57 @@ public sealed class IoT : MonoBehaviour
     int _sensorVal = 100;
     Coroutine _pollCoroutine;
     bool _pollRequested;
+    string _effectiveToken;
 
     void Start()
     {
-        if (string.IsNullOrEmpty(blynkToken))
+        _effectiveToken = ResolveBlynkToken(blynkToken);
+
+        // Door open/close animations work without Blynk; wire these regardless.
+        midBtn.onClick.AddListener(CloseDoor);
+        closeStepBtn.onClick.AddListener(StopPollingDoorSensor);
+
+        if (string.IsNullOrEmpty(_effectiveToken))
         {
-            Debug.LogError("IoT: Assign blynkToken in the Inspector (use a non-committed config). IoT controls are disabled.");
+            Debug.LogWarning(
+                "IoT: No Blynk token (Inspector, env BLYNK_TOKEN, or Resources/BlynkToken.txt). Brake lights and door sensor polling are disabled.");
             return;
         }
 
-        string tokenParam = blynkToken;
+        string tokenParam = _effectiveToken;
         bckBtn.onClick.AddListener(() => StartCoroutine(UpdateValue($"{updateUrlBase}{tokenParam}&v1=1")));
         fwdBtn.onClick.AddListener(() => StartCoroutine(UpdateValue($"{updateUrlBase}{tokenParam}&v1=0")));
-        midBtn.onClick.AddListener(CloseDoor);
         okBtn.onClick.AddListener(StartPollingDoorSensor);
-        closeStepBtn.onClick.AddListener(StopPollingDoorSensor);
+    }
+
+    static string ResolveBlynkToken(string serializedToken)
+    {
+        return TryFirstNonEmpty(
+            serializedToken,
+            Environment.GetEnvironmentVariable("BLYNK_TOKEN"),
+            LoadResourcesToken());
+    }
+
+    static string LoadResourcesToken()
+    {
+        var ta = Resources.Load<TextAsset>("BlynkToken");
+        return ta != null ? ta.text : null;
+    }
+
+    static string TryFirstNonEmpty(params string[] candidates)
+    {
+        if (candidates == null)
+            return null;
+        foreach (var c in candidates)
+        {
+            if (string.IsNullOrEmpty(c))
+                continue;
+            var t = c.Trim();
+            if (t.Length > 0)
+                return t;
+        }
+
+        return null;
     }
 
     void OnDisable()
@@ -49,14 +86,14 @@ public sealed class IoT : MonoBehaviour
 
     void StartPollingDoorSensor()
     {
-        if (string.IsNullOrEmpty(blynkToken))
+        if (string.IsNullOrEmpty(_effectiveToken))
             return;
 
         _pollRequested = true;
         if (_pollCoroutine != null)
             return;
 
-        string uri = $"{getUrlBase}{blynkToken}&v{DoorSensorPin}";
+        string uri = $"{getUrlBase}{_effectiveToken}&v{DoorSensorPin}";
         _pollCoroutine = StartCoroutine(PollSensorLoop(uri));
     }
 
